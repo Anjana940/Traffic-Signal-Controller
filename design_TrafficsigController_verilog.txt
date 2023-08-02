@@ -1,0 +1,149 @@
+
+
+module Traffic_sigcontroller(
+  input clk,rstn,
+  output reg[2:0]sign_S1,
+  output reg[2:0]sign_S2,
+  output reg[2:0]sign_S3,
+  output reg[2:0]sign_S4
+);
+  parameter State1=0,State2=1,State3=2,State4=3,State5=4,State6=5;
+  reg[3:0]c;
+  reg[2:0]present_state;
+  parameter T1=7,T2=2,T3=5,T4=3;
+  always@(posedge clk or posedge rstn)
+    begin
+      if(rstn==1)
+        begin
+          present_state<=State1;
+          c<=0;
+        end
+      else
+        case(present_state)
+          State1:if(c<T1)
+            begin
+              present_state<=State1;
+              c<=c+1;
+            end
+          else
+            begin
+              present_state<=State2;
+              c<=0;
+            end
+          State2:
+            if(c<T2)
+            begin
+              present_state<=State2;
+              c<=c+1;
+            end
+          else
+            begin
+              present_state<=State3;
+              c<=0;
+            end
+          State3:
+            if(c<T3)
+            begin
+              present_state<=State3;
+              c<=c+1;
+            end
+          else
+            begin
+              present_state<=State4;
+              c<=0;
+            end
+          State4:
+            if(c<T2)
+            begin
+              present_state<=State4;
+              c<=c+1;
+            end
+          else
+            begin
+              present_state<=State5;
+              c<=0;
+            end
+          State5:
+            if(c<T4)
+            begin
+              present_state<=State5;
+              c<=c+1;
+            end
+          else
+            begin
+              present_state<=State6;
+              c<=0;
+            end
+          State6:
+            if(c<T2)
+            begin
+              present_state<=State6;
+              c<=c+1;
+            end
+          else
+            begin
+              present_state<=State1;
+              c<=0;
+            end
+          default:
+            begin
+              present_state<=State1;
+              c<=0;
+            end
+        endcase
+    end
+  always@(present_state)
+    begin
+      case(present_state)
+        State1:
+          begin
+          sign_S1<=3'b001;//Main line from left to right
+          sign_S2<=3'b100;//Signal for T-operation
+          sign_S3<=3'b001;//Main line from right to left
+          sign_S4<=3'b100;//for turning from lane to main line towards right.
+          end
+        State2:
+           begin
+          sign_S1<=3'b001;//Main line from left to right
+          sign_S2<=3'b100;//Signal for T-operation
+          sign_S3<=3'b010;//Main line from right to left
+          sign_S4<=3'b100;//for turning from lane to main line towards right.
+          end
+        State3:
+           begin
+          sign_S1<=3'b001;//Main line from left to right
+          sign_S2<=3'b001;//Signal for T-operation
+          sign_S3<=3'b100;//Main line from right to left
+          sign_S4<=3'b100;//for turning from lane to main line towards right.
+          end
+        State4:
+           begin
+          sign_S1<=3'b010;//Main line from left to right
+          sign_S2<=3'b010;//Signal for T-operation
+          sign_S3<=3'b100;//Main line from right to left
+          sign_S4<=3'b100;//for turning from lane to main line towards right.
+          end
+        State5:
+           begin
+          sign_S1<=3'b100;//Main line from left to right
+          sign_S2<=3'b100;//Signal for T-operation
+          sign_S3<=3'b100;//Main line from right to left
+          sign_S4<=3'b001;//for turning from lane to main line towards right.
+          end
+        State6:
+           begin
+          sign_S1<=3'b100;//Main line from left to right
+          sign_S2<=3'b100;//Signal for T-operation
+          sign_S3<=3'b100;//Main line from right to left
+          sign_S4<=3'b010;//for turning from lane to main line towards right.
+          end
+        default:
+           begin
+          sign_S1<=3'b000;//Main line from left to right
+          sign_S2<=3'b000;//Signal for T-operation
+          sign_S3<=3'b000;//Main line from right to left
+          sign_S4<=3'b000;//for turning from lane to main line towards right.
+          end
+      endcase
+    end
+endmodule

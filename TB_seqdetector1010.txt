@@ -1,0 +1,31 @@
+module tb;
+  reg clk,rst,in;
+  wire out;
+   
+  always #10 clk=~clk;
+  seq1010_det dut(.clk(clk),.rst(rst),.in(in),.out(out));
+    initial begin
+    // Dump waves
+    $dumpfile("dump.vcd");
+    $dumpvars(1);
+    end
+  initial begin
+    clk<=0;
+    rst<=1;
+    in<=0;
+    $monitor("rst=%b,in=%b,out=%b",rst,in,out);
+    #10 rst<=0;
+    #20 in<=1;
+    #20 in<=0;
+    #20 in<=1;
+    #20 in<=1;
+    #20 in<=1;
+    #20 in<=0;
+    #20 in<=1;
+    #20 in<=1;
+  
+    
+    
+    #100 $finish;
+  end
+endmodule
